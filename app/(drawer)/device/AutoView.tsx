@@ -6,14 +6,39 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  Easing,
 } from "react-native";
 import plc1 from "@/assets/images/autos200-Photoroom.png";
 import plc2 from "@/assets/images/1200auto-Photoroom.png";
 import { Switch } from "react-native-gesture-handler";
+import { useMachineData } from "@/hooks/useMachineData";
+import { useFormat } from "@/hooks/useFormat";
 
 const AutoView = ({ onBack, id }: any) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [isAutoAerationOn, setIsAutoAerationOn] = useState(false);
+  const { data, error, isConnected, connect, disconnect } = useMachineData();
+
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.5,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
 
   useEffect(() => {
     if (id == 1 || id == 2) {
@@ -30,36 +55,93 @@ const AutoView = ({ onBack, id }: any) => {
     id == 1
       ? [
           { label: "RH", value: "50%" },
-          { label: "TH", value: "25°C" },
-          { label: "HTR", value: "ON" },
-          { label: "HTG", value: "ON" },
-          { label: "AHT", value: "30°C" },
-          { label: "T0", value: "30°C" },
-          { label: "T1", value: "28°C" },
-          { label: "T2", value: "26°C" },
-          { label: "T1 - TH", value: "-2°C" },
+          { label: "TH", value: `${useFormat(data?.AI_TH_Act) ?? "--"}` },
+          { label: "HTR", value: `${data?.Value_to_Display_HEATER ?? "--"}` },
+          {
+            label: "HGs",
+            value: `${data?.Value_to_Display_HOT_GAS_VALVE_OPEN ?? "--"}`,
+          },
+          {
+            label: "AHT",
+            value: `${data?.Value_to_Display_AHT_VALE_OPEN ?? "--"}`,
+          },
+          {
+            label: "T0",
+            value: `${useFormat(data?.AI_AIR_OUTLET_TEMP) ?? "--"}`,
+          },
+          { label: "T1", value: `${data?.AI_COLD_AIR_TEMP ?? "--"}` },
+          { label: "T2", value: `${useFormat(data?.AI_AMBIANT_TEMP) ?? "--"}` },
+          { label: "T1 - TH", value: `${useFormat(data?.AI_TH_Act) ?? "--"}` },
           { label: "PH", value: "120 Pa" },
           { label: "PA", value: "100 Pa" },
-          { label: "COND", value: "80%" },
-          { label: "BLOWER", value: "60%" },
-          { label: "HP", value: "120" },
-          { label: "LP", value: "45" },
+          {
+            label: "COND",
+            value: `${
+              useFormat(data?.Value_to_Display_COND_ACT_SPEED) ?? "--"
+            }`,
+          },
+          {
+            label: "BLOWER",
+            value: `${data?.Value_to_Display_EVAP_ACT_SPEED ?? "--"}`,
+          },
+          {
+            label: "HP",
+            value: `${useFormat(data?.AI_COND_PRESSURE) ?? "--"}`,
+          },
+          { label: "LP", value: `${useFormat(data?.AI_SUC_PRESSURE) ?? "--"}` },
         ]
       : [
-          { label: "TH", value: "25°C" },
-          { label: "T0", value: "30°C" },
-          { label: "T1", value: "28°C" },
-          { label: "T2", value: "26°C" },
-          { label: "T1 - TH", value: "-2°C" },
-          { label: "BLOWER", value: "60%" },
-          { label: "COND", value: "80%" },
-          { label: "HP", value: "120" },
-          { label: "LP", value: "45" },
+          { label: "TH", value: `${useFormat(data?.AI_TH_Act) ?? "--"}` },
+          {
+            label: "T0",
+            value: `${useFormat(data?.AI_AIR_OUTLET_TEMP) ?? "--"}`,
+          },
+          {
+            label: "T1",
+            value: `${useFormat(data?.AI_COLD_AIR_TEMP) ?? "--"}`,
+          },
+          { label: "T2", value: `${useFormat(data?.AI_AMBIANT_TEMP) ?? "--"}` },
+          { label: "T1 - TH", value: `${data?.AI_TH_Act ?? "--"}` },
+          {
+            label: "COND",
+            value: `${
+              useFormat(data?.Value_to_Display_COND_ACT_SPEED) ?? "--"
+            }`,
+          },
+          {
+            label: "BLOWER",
+            value: `${data?.Value_to_Display_EVAP_ACT_SPEED ?? "--"}`,
+          },
+          {
+            label: "HP",
+            value: `${useFormat(data?.AI_COND_PRESSURE) ?? "--"}`,
+          },
+          { label: "LP", value: `${useFormat(data?.AI_SUC_PRESSURE) ?? "--"}` },
         ];
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>AUTO</Text>
+      <Animated.View
+        style={{
+          width: 12,
+          height: 12,
+          borderRadius: 6,
+          backgroundColor: isConnected ? "#34D399" : "#F87171", // green or red
+          transform: [{ scale: pulseAnim }],
+        }}
+      />
+
+      {/* Connection Text */}
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: isConnected ? "#10B981" : "#EF4444",
+        }}
+      >
+        {isConnected ? "Connected" : "Disconnected"}
+      </Text>
 
       <Image
         source={id == 1 ? plc2 : plc1}

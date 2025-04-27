@@ -13,6 +13,8 @@ import plc1 from "@/assets/images/aerationheating-Photoroom.png";
 import plc2 from "@/assets/images/aerationwithheating-Photoroom.png";
 import plc3 from "@/assets/images/1200aerationheating-Photoroom.png";
 import plc4 from "@/assets/images/1200aerationwihtout-Photoroom.png";
+import { useMachineData } from "@/hooks/useMachineData";
+import { useFormat } from "@/hooks/useFormat";
 
 export default function AerationControlView({
   mode,
@@ -25,6 +27,7 @@ export default function AerationControlView({
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [showMore, setShowMore] = useState(false);
+  const { data, error, isConnected, connect, disconnect } = useMachineData();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -90,7 +93,7 @@ export default function AerationControlView({
             <Text style={styles.tempLabel}>TH</Text>
             <TextInput
               style={styles.tempInput}
-              defaultValue="0.0"
+              defaultValue={useFormat(data?.AI_TH_Act) ?? "0"}
               editable={false}
             />
             <Text style={styles.unit}>°C</Text>
@@ -106,10 +109,20 @@ export default function AerationControlView({
             <Text>HOURS</Text>
             <TextInput
               style={styles.durationBox}
-              defaultValue="0"
+              defaultValue={String(
+                mode == "WITH_HEATING" ? data?.HEATING_MODE_Continuous_Mode : 0
+              ).padStart(2, "0")}
               editable={false}
             />
+
             <Text>MINUTES</Text>
+            <TextInput
+              style={styles.durationBox}
+              defaultValue={String(
+                mode == "WITH_HEATING" ? data?.HEATING_MODE_Continuous_Mode : 0
+              ).padStart(2, "0")}
+              editable={false}
+            />
           </View>
 
           {/* Show more fields when toggled */}
@@ -133,7 +146,11 @@ export default function AerationControlView({
                 <Text style={styles.tempLabel}>T2</Text>
                 <TextInput
                   style={styles.tempInput}
-                  defaultValue="0.0"
+                  defaultValue={useFormat(
+                    mode == "WITHOUT_HEATING"
+                      ? data?.AI_AMBIANT_TEMP ?? "0.0"
+                      : "00"
+                  )}
                   editable={false}
                 />
                 <Text style={styles.unit}>°C</Text>
@@ -144,7 +161,11 @@ export default function AerationControlView({
                 <Text style={styles.label}>BLOWER</Text>
                 <TextInput
                   style={styles.percentBox}
-                  defaultValue="0%"
+                  defaultValue={`${useFormat(
+                    mode == "WITHOUT_HEATING"
+                      ? data?.Value_to_Display_EVAP_ACT_SPEED ?? "00"
+                      : "00"
+                  )}%`}
                   editable={false}
                 />
               </View>
@@ -154,7 +175,9 @@ export default function AerationControlView({
                   <Text style={styles.tempLabel}>Delta</Text>
                   <TextInput
                     style={styles.tempInput}
-                    defaultValue="0.0"
+                    defaultValue={useFormat(
+                      data?.HEATING_MODE_SET_TH_FOR_HEATING_MODE ?? "00"
+                    )}
                     editable={false}
                   />
                   <Text style={styles.unit}>°C</Text>
