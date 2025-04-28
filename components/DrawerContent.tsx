@@ -1,22 +1,23 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Image, 
-  TouchableOpacity, 
-  ScrollView
-} from 'react-native';
-import { useRouter, usePathname } from 'expo-router';
-import { 
-  LayoutDashboard, 
-  Monitor, 
-  Users, 
-  ClipboardList, 
-  LogOut 
-} from 'lucide-react-native';
-import Colors from '@/constants/Colors';
-import { useAuth } from '@/context/AuthContext';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { useRouter, usePathname } from "expo-router";
+import {
+  LayoutDashboard,
+  Monitor,
+  Users,
+  ClipboardList,
+  LogOut,
+} from "lucide-react-native";
+import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DrawerContent() {
   const router = useRouter();
@@ -25,30 +26,30 @@ export default function DrawerContent() {
 
   const menuItems = [
     {
-      title: 'Overview',
+      title: "Overview",
       icon: <LayoutDashboard size={22} color={Colors.brand.drawerIcon} />,
-      path: '/dashboard',
+      path: "/dashboard",
     },
     {
-      title: 'Devices',
+      title: "Devices",
       icon: <Monitor size={22} color={Colors.brand.drawerIcon} />,
-      path: '/devices',
+      path: "/devices",
     },
     {
-      title: 'Contact Us',
+      title: "Contact Us",
       icon: <Users size={22} color={Colors.brand.drawerIcon} />,
-      path: '/contact',
+      path: "/contact",
     },
     {
-      title: 'Registration',
+      title: "Registration",
       icon: <ClipboardList size={22} color={Colors.brand.drawerIcon} />,
-      path: '/registration',
+      path: "/registration",
     },
   ];
 
   const handleLogout = async () => {
     await signOut();
-    router.replace('/login');
+    router.replace("/login");
   };
 
   const navigateTo = (path: string) => {
@@ -59,6 +60,17 @@ export default function DrawerContent() {
     return pathname === path;
   };
 
+  const [storedData, setStoredData] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const storedValue = await AsyncStorage.getItem("value");
+      if (storedValue) {
+        setStoredData(JSON.parse(storedValue));
+      }
+    })();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -67,9 +79,13 @@ export default function DrawerContent() {
         </View>
         <View style={styles.userContainer}>
           <View style={styles.userAvatar}>
-            <Text style={styles.userInitial}>{user?.name.charAt(0) || 'U'}</Text>
+            <Text style={styles.userInitial}>
+              {storedData?.user?.firstName.charAt(0) || "U"}
+            </Text>
           </View>
-          <Text style={styles.userName}>{user?.name || 'User'}</Text>
+          <Text style={styles.userName}>
+            {storedData?.user?.firstName || "User"}
+          </Text>
         </View>
       </View>
 
@@ -84,10 +100,12 @@ export default function DrawerContent() {
             onPress={() => navigateTo(item.path)}
           >
             {item.icon}
-            <Text style={[
-              styles.menuItemText,
-              isActive(item.path) && styles.activeMenuItemText,
-            ]}>
+            <Text
+              style={[
+                styles.menuItemText,
+                isActive(item.path) && styles.activeMenuItemText,
+              ]}
+            >
               {item.title}
             </Text>
           </TouchableOpacity>
@@ -110,54 +128,54 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   logoText: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.brand.drawerText,
   },
   userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   userAvatar: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#374151',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#374151",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 10,
   },
   userInitial: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   userName: {
     color: Colors.brand.drawerText,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   menuContainer: {
     flex: 1,
     paddingTop: 10,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 20,
     marginBottom: 5,
   },
   activeMenuItem: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: "rgba(59, 130, 246, 0.1)",
     borderLeftWidth: 3,
     borderLeftColor: Colors.brand.primary,
   },
@@ -167,15 +185,15 @@ const styles = StyleSheet.create({
     color: Colors.brand.drawerText,
   },
   activeMenuItemText: {
-    fontWeight: '600',
-    color: 'white',
+    fontWeight: "600",
+    color: "white",
   },
   logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: "rgba(255, 255, 255, 0.1)",
   },
   logoutText: {
     fontSize: 16,

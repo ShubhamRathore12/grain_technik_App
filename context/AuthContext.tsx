@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
-import { User } from '@/types';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
+import { User } from "@/types";
 
 type AuthContextType = {
   user: User | null;
@@ -14,36 +14,36 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Mock user for demo purposes
 const mockUser: User = {
-  id: '1',
-  email: 'user@example.com',
-  name: 'John Doe',
+  id: "1",
+  email: "user@example.com",
+  name: "John Doe",
   isLoggedIn: true,
 };
 
 const storeUser = async (user: User) => {
   const userJSON = JSON.stringify(user);
-  if (Platform.OS === 'web') {
-    localStorage.setItem('user', userJSON);
+  if (Platform.OS === "web") {
+    localStorage.setItem("user", userJSON);
   } else {
-    await SecureStore.setItemAsync('user', userJSON);
+    await SecureStore.setItemAsync("user", userJSON);
   }
 };
 
 const getStoredUser = async () => {
-  if (Platform.OS === 'web') {
-    const userJSON = localStorage.getItem('user');
+  if (Platform.OS === "web") {
+    const userJSON = localStorage.getItem("user");
     return userJSON ? JSON.parse(userJSON) : null;
   } else {
-    const userJSON = await SecureStore.getItemAsync('user');
+    const userJSON = await SecureStore.getItemAsync("user");
     return userJSON ? JSON.parse(userJSON) : null;
   }
 };
 
 const removeStoredUser = async () => {
-  if (Platform.OS === 'web') {
-    localStorage.removeItem('user');
+  if (Platform.OS === "web") {
+    localStorage.removeItem("user");
   } else {
-    await SecureStore.deleteItemAsync('user');
+    await SecureStore.deleteItemAsync("user");
   }
 };
 
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(storedUser);
         }
       } catch (error) {
-        console.error('Failed to load user from storage', error);
+        console.error("Failed to load user from storage", error);
       } finally {
         setIsLoading(false);
       }
@@ -75,13 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setIsLoading(true);
         // In a real app, you would make an API call here
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network request
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network request
+
         await storeUser(mockUser);
         setUser(mockUser);
         return true;
       } catch (error) {
-        console.error('Sign in failed', error);
+        console.error("Sign in failed", error);
         return false;
       } finally {
         setIsLoading(false);
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await removeStoredUser();
       setUser(null);
     } catch (error) {
-      console.error('Sign out failed', error);
+      console.error("Sign out failed", error);
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

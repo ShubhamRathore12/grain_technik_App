@@ -17,6 +17,7 @@ import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { appLogo } from "@/assets/images/logo";
 import Colors from "@/constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const loginSchema = Yup.object().shape({
   username: Yup.string(),
@@ -31,7 +32,10 @@ export default function LoginScreen() {
   const [loginError, setLoginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (values: { username: string; password: string }) => {
+  const handleLogin = async (values: {
+    username: string;
+    password: string;
+  }) => {
     setLoginError("");
     setIsLoading(true);
 
@@ -56,6 +60,7 @@ export default function LoginScreen() {
 
       if (data?.token && data?.user) {
         await signIn(data.token, data.user);
+        await AsyncStorage.setItem("value", JSON.stringify(data));
         router.replace("/dashboard");
       } else {
         setLoginError("Unexpected response from server. Please try again.");

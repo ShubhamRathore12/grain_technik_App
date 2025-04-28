@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { Device } from "@/types";
 import Colors from "@/constants/Colors";
 import plc1 from "@/assets/images/1200.jpg";
 import plc2 from "@/assets/images/200.jpg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const sampleDevices: Device[] = [
   {
@@ -29,8 +30,8 @@ const sampleDevices: Device[] = [
   },
 ];
 
-const locations = ["All Locations", "Singapore", "India"];
-const companies = ["All Companies", "Acme Corp", "TechGlobal"];
+const locations = ["All Locations", "Location 1", "Location 2"];
+const companies = ["All Companies", "Company A", "Company B"];
 
 export default function DevicesScreen() {
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
@@ -42,6 +43,16 @@ export default function DevicesScreen() {
     console.log("Device pressed:", device);
     // Navigate to device details or perform another action
   };
+  const [storedData, setStoredData] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const storedValue = await AsyncStorage.getItem("value");
+      if (storedValue) {
+        setStoredData(JSON.parse(storedValue));
+      }
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -61,23 +72,24 @@ export default function DevicesScreen() {
           </TouchableOpacity>
           {isLocationDropdownOpen && (
             <View style={styles.dropdownMenu}>
-              {locations.map((location) => (
-                <TouchableOpacity
-                  key={location}
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setSelectedLocation(location);
-                    setIsLocationDropdownOpen(false);
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>{location}</Text>
-                </TouchableOpacity>
-              ))}
+              {locations
+                .filter((location) => location !== storedData?.user?.location) // ✅ Fix
+                .map((location) => (
+                  <TouchableOpacity
+                    key={location}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setSelectedLocation(location);
+                      setIsLocationDropdownOpen(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{location}</Text>
+                  </TouchableOpacity>
+                ))}
             </View>
           )}
         </View>
 
-        {/* Company Dropdown */}
         <View style={styles.dropdownContainer}>
           <Text style={styles.filterLabel}>Select Company</Text>
           <TouchableOpacity
@@ -87,20 +99,23 @@ export default function DevicesScreen() {
             <Text style={styles.dropdownText}>{selectedCompany}</Text>
             <Text style={styles.dropdownIcon}>▼</Text>
           </TouchableOpacity>
+          {/* Company Dropdown */}
           {isCompanyDropdownOpen && (
             <View style={styles.dropdownMenu}>
-              {companies.map((company) => (
-                <TouchableOpacity
-                  key={company}
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setSelectedCompany(company);
-                    setIsCompanyDropdownOpen(false);
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>{company}</Text>
-                </TouchableOpacity>
-              ))}
+              {companies
+                .filter((company) => company !== storedData?.user?.company) // ✅ Fix
+                .map((company) => (
+                  <TouchableOpacity
+                    key={company}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setSelectedCompany(company);
+                      setIsCompanyDropdownOpen(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{company}</Text>
+                  </TouchableOpacity>
+                ))}
             </View>
           )}
         </View>
