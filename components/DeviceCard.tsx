@@ -16,12 +16,25 @@ export default function DeviceCard({ device, onPress }: DeviceCardProps) {
     router.push(`/device/${device.id}`);
   };
 
+  // ✅ Safely check each status — default is false (RED)
+  const isMachineRunning = device.machineStatus === "Running" ? true : false;
+  const isInternetConnected =
+    device.internetStatus === "Connected" ? true : false;
+  const isCoolingActive = device.coolingStatus === "Active" ? true : false;
+
   return (
     <View style={styles.container}>
       <Image source={device.imageUrl} style={styles.image} />
       <Text style={styles.title}>{device.name}</Text>
-      <Text style={styles.status}>{device.status}</Text>
 
+      {/* Status Section */}
+      <View style={styles.statusContainer}>
+        <StatusItem label="Machine" active={isMachineRunning} />
+        <StatusItem label="Internet" active={isInternetConnected} />
+        <StatusItem label="Cooling" active={isCoolingActive} />
+      </View>
+
+      {/* Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleViewMore}>
           <Text style={styles.buttonText}>View More</Text>
@@ -31,6 +44,21 @@ export default function DeviceCard({ device, onPress }: DeviceCardProps) {
           <Text style={styles.buttonText}>Download Files</Text>
         </TouchableOpacity>
       </View>
+    </View>
+  );
+}
+
+// 🔥 Small component for status with dot
+function StatusItem({ label, active }: { label: string; active: boolean }) {
+  return (
+    <View style={styles.statusItem}>
+      <Text style={styles.statusText}>{label} Status</Text>
+      <View
+        style={[
+          styles.statusDot,
+          { backgroundColor: active ? "#10B981" : "#EF4444" }, // green or red
+        ]}
+      />
     </View>
   );
 }
@@ -62,10 +90,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#1F2937",
   },
-  status: {
-    color: "#6B7280",
-    fontSize: 14,
+  statusContainer: {
     marginBottom: 16,
+  },
+  statusItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  statusText: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginRight: 8,
+  },
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   buttonContainer: {
     flexDirection: "column",

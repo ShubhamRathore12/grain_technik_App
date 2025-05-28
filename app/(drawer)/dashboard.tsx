@@ -7,17 +7,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import ActivityMap from "@/components/ActivityMap";
 
 // Sample data for quota stats
 const quotaData = [
   { label: "SMS", used: 0, total: 50 },
-  { label: "EMAIL", used: 346, total: 1000 },
-  { label: "DEVICE", used: 45, total: 50 },
-  { label: "CONTACT", used: 4, total: 10 },
-  { label: "TRIGGER", used: 480, total: 500 },
-  { label: "Dashboard Widget", used: 3, total: 10 },
-  { label: "REPORT", used: 17, total: 70 },
+  { label: "EMAIL", used: 0, total: 1000 },
+  { label: "DEVICE", used: 2, total: 50 },
+  { label: "CONTACT", used: 0, total: 10 },
+  { label: "TRIGGER", used: 0, total: 500 },
+  { label: "Dashboard Widget", used: 0, total: 10 },
+  { label: "REPORT", used: 0, total: 70 },
 ];
 
 // Sample data for device activity
@@ -73,9 +72,7 @@ export default function DashboardScreen() {
             </View>
             <Text style={styles.activityTitle}>Trigger/Report Activity</Text>
           </View>
-          <View style={styles.activityContent}>
-            <ActivityMap />
-          </View>
+          <View style={styles.activityContent}>{/* <ActivityMap /> */}</View>
         </View>
 
         <View style={styles.activityCard}>

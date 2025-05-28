@@ -1,5 +1,4 @@
-// hooks/useMachineData.ts
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface MachineData {
   [key: string]: any;
@@ -9,26 +8,22 @@ interface ErrorType {
   message: string;
 }
 
-export function useMachineData({ url }: { url: string }) {
+export function useMachine200Data({ id }: { id: number }) {
   const [data, setData] = useState<MachineData | null>(null);
   const [error, setError] = useState<ErrorType | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchData = async () => {
-    if (!url) return;
-
     try {
-      const response = await fetch(url);
+      const response = await fetch(
+        `https://grain-backend.onrender.com/api/alldata/alldata`
+      );
       const result = await response.json();
-      console.log(result, "rsult");
+      console.log(result, "result");
 
       if (result.success) {
-        const normalizedData = Array.isArray(result.data)
-          ? result.data[0] ?? {}
-          : result.data;
-
-        setData(normalizedData);
+        setData(result.data);
         setIsConnected(true);
         setError(null);
       } else {
@@ -43,18 +38,16 @@ export function useMachineData({ url }: { url: string }) {
   };
 
   useEffect(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-
     fetchData(); // fetch once immediately
 
     intervalRef.current = setInterval(() => {
       fetchData();
-    }, 5000); // every 5 seconds
+    }, 5000); // every 1 second
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [url]); // re-run on URL change
+  }, [fetchData]);
 
   return {
     data,

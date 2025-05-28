@@ -13,11 +13,24 @@ import plc2 from "@/assets/images/1200auto-Photoroom.png";
 import { Switch } from "react-native-gesture-handler";
 import { useMachineData } from "@/hooks/useMachineData";
 import { useFormat } from "@/hooks/useFormat";
+import { useMachine200Data } from "@/hooks/useMachine200Data";
 
 const AutoView = ({ onBack, id }: any) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [isAutoAerationOn, setIsAutoAerationOn] = useState(false);
-  const { data, error, isConnected, connect, disconnect } = useMachineData();
+  const [setId, setIsId] = useState(1);
+  useEffect(() => {
+    setIsId(id);
+  }, [id]);
+
+  const { data, error, isConnected } = useMachineData({
+    url:
+      id == 2
+        ? `https://grain-backend.onrender.com/api/alldata/alldata`
+        : `https://grain-backend.onrender.com/api/ws/current-data`,
+  });
+
+  console.log(data);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -56,20 +69,28 @@ const AutoView = ({ onBack, id }: any) => {
       ? [
           { label: "RH", value: "50%" },
           { label: "TH", value: `${useFormat(data?.AI_TH_Act) ?? "--"}` },
-          { label: "HTR", value: `${data?.Value_to_Display_HEATER ?? "--"}` },
+          {
+            label: "HTR",
+            value: `${useFormat(data?.Value_to_Display_HEATER) ?? "--"}`,
+          },
           {
             label: "HGs",
-            value: `${data?.Value_to_Display_HOT_GAS_VALVE_OPEN ?? "--"}`,
+            value: `${
+              useFormat(data?.Value_to_Display_HOT_GAS_VALVE_OPEN) ?? "--"
+            }`,
           },
           {
             label: "AHT",
-            value: `${data?.Value_to_Display_AHT_VALE_OPEN ?? "--"}`,
+            value: `${useFormat(data?.Value_to_Display_AHT_VALE_OPEN) ?? "--"}`,
           },
           {
             label: "T0",
             value: `${useFormat(data?.AI_AIR_OUTLET_TEMP) ?? "--"}`,
           },
-          { label: "T1", value: `${data?.AI_COLD_AIR_TEMP ?? "--"}` },
+          {
+            label: "T1",
+            value: `${useFormat(data?.AI_COLD_AIR_TEMP) ?? "--"}`,
+          },
           { label: "T2", value: `${useFormat(data?.AI_AMBIANT_TEMP) ?? "--"}` },
           { label: "T1 - TH", value: `${useFormat(data?.AI_TH_Act) ?? "--"}` },
           { label: "PH", value: "120 Pa" },
@@ -91,32 +112,28 @@ const AutoView = ({ onBack, id }: any) => {
           { label: "LP", value: `${useFormat(data?.AI_SUC_PRESSURE) ?? "--"}` },
         ]
       : [
-          { label: "TH", value: `${useFormat(data?.AI_TH_Act) ?? "--"}` },
           {
-            label: "T0",
-            value: `${useFormat(data?.AI_AIR_OUTLET_TEMP) ?? "--"}`,
+            label: "TH",
+            value: `${useFormat(data?.AFTER_HEATER_TEMP_Th) ?? "--"}`,
           },
+          { label: "T0", value: `${useFormat(data?.AIR_OUTLET_TEMP) ?? "--"}` },
           {
             label: "T1",
-            value: `${useFormat(data?.AI_COLD_AIR_TEMP) ?? "--"}`,
-          },
-          { label: "T2", value: `${useFormat(data?.AI_AMBIANT_TEMP) ?? "--"}` },
-          { label: "T1 - TH", value: `${data?.AI_TH_Act ?? "--"}` },
-          {
-            label: "COND",
-            value: `${
-              useFormat(data?.Value_to_Display_COND_ACT_SPEED) ?? "--"
-            }`,
+            value: `${useFormat(data?.COLD_AIR_TEMP_T1) ?? "--"}`,
           },
           {
-            label: "BLOWER",
-            value: `${data?.Value_to_Display_EVAP_ACT_SPEED ?? "--"}`,
+            label: "T2",
+            value: `${useFormat(data?.AMBIENT_AIR_TEMP_T2) ?? "--"}`,
           },
+          { label: "TH-T1", value: `${useFormat(data?.Th_T1) ?? "--"}` },
+          { label: "COND", value: `${useFormat(data?.CONDENSER_RPM) ?? "--"}` },
+          { label: "BLOWER", value: `${useFormat(data?.BLOWER_RPM) ?? "--"}` },
           {
-            label: "HP",
-            value: `${useFormat(data?.AI_COND_PRESSURE) ?? "--"}`,
+            label: "COMP",
+            value: `${useFormat(data?.COMPRESSOR_TIME) ?? "--"}`,
           },
-          { label: "LP", value: `${useFormat(data?.AI_SUC_PRESSURE) ?? "--"}` },
+          { label: "HP", value: `${useFormat(data?.HP) ?? "--"}` },
+          { label: "LP", value: `${useFormat(data?.LP) ?? "--"}` },
         ];
 
   return (

@@ -61,7 +61,7 @@ export default function LoginScreen() {
       if (data?.token && data?.user) {
         await signIn(data.token, data.user);
         await AsyncStorage.setItem("value", JSON.stringify(data));
-        router.replace("/dashboard");
+        router.replace("/(drawer)/dashboard");
       } else {
         setLoginError("Unexpected response from server. Please try again.");
       }

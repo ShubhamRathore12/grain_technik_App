@@ -29,7 +29,7 @@ interface FormValues {
 // Yup Schema
 const validationSchema = Yup.object().shape({
   accountType: Yup.string()
-    .oneOf(["manufacture", "customer"], "Please select an account type")
+    .oneOf(["manufacturer", "customer"], "Please select an account type")
     .required("Please select an account type"),
   firstName: Yup.string()
     .min(2, "First name must be at least 2 characters")
@@ -65,7 +65,7 @@ const validationSchema = Yup.object().shape({
     .required("At least one monitor access is required"),
 });
 
-const accountTypes = ["manufacture", "customer"];
+const accountTypes = ["manufacturer", "customer"];
 const companies = ["Company A", "Company B"];
 const locationsList = ["Location 1", "Location 2"];
 const monitorAccessOptions = [
@@ -99,7 +99,7 @@ export default function RegistrationScreen() {
     try {
       const payload = {
         ...values,
-        email: values.accountType === "manufacture" ? values.email : undefined,
+        email: values.accountType === "manufacturer" ? values.email : undefined,
         monitorAccess: values.monitorAccess,
       };
 

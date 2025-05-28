@@ -45,11 +45,39 @@ export default function DrawerContent() {
       icon: <ClipboardList size={22} color={Colors.brand.drawerIcon} />,
       path: "/registration",
     },
+
+    {
+      title: "Reports",
+      icon: <ClipboardList size={22} color={Colors.brand.drawerIcon} />,
+      path: "/reports",
+    },
   ];
 
+  const [storedData, setStoredData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedValue = await AsyncStorage.getItem("value");
+        if (storedValue) {
+          const parsedData = JSON.parse(storedValue);
+          setStoredData(parsedData);
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+    loadUserData();
+  }, []);
+
   const handleLogout = async () => {
-    await signOut();
-    router.replace("/login");
+    try {
+      await AsyncStorage.removeItem("value");
+      await signOut();
+      router.replace("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   const navigateTo = (path: string) => {
@@ -59,17 +87,6 @@ export default function DrawerContent() {
   const isActive = (path: string) => {
     return pathname === path;
   };
-
-  const [storedData, setStoredData] = useState<any>(null);
-
-  useEffect(() => {
-    (async () => {
-      const storedValue = await AsyncStorage.getItem("value");
-      if (storedValue) {
-        setStoredData(JSON.parse(storedValue));
-      }
-    })();
-  }, []);
 
   return (
     <View style={styles.container}>

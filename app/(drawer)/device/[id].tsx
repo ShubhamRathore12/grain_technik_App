@@ -46,7 +46,9 @@ const settingsOptions = [
 
 export default function DeviceDetailsScreen() {
   const { id } = useLocalSearchParams();
+
   const router = useRouter();
+
   const [currentView, setCurrentView] = useState("menu");
   const [selectedSetting, setSelectedSetting] = useState<string | null>(null);
   const [animations] = useState(
