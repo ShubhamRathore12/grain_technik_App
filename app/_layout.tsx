@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
@@ -6,12 +6,14 @@ import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_7
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from '@/context/AuthContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { View } from 'react-native';
 
 // Keep the splash screen visible until explicitly hidden
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useFrameworkReady();
+  const rootViewRef = useRef(null);
 
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -32,16 +34,18 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false, gestureEnabled: false }} />
-          <Stack.Screen name="(drawer)" options={{ headerShown: false, gestureEnabled: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </AuthProvider>
-    </GestureHandlerRootView>
+    <View style={{ flex: 1 }} ref={rootViewRef}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AuthProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ headerShown: false, gestureEnabled: false }} />
+            <Stack.Screen name="(drawer)" options={{ headerShown: false, gestureEnabled: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </AuthProvider>
+      </GestureHandlerRootView>
+    </View>
   );
 }
