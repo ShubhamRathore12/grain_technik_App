@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "dev": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -12,13 +13,12 @@
     "lint": "expo lint"
   },
   "expo": {
-  "doctor": {
-    "reactNativeDirectoryCheck": {
-      "exclude": ["react-native-html-to-pdf", "exceljs", "react-native-vector-icons"]
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": ["react-native-html-to-pdf", "exceljs", "react-native-vector-icons"]
+      }
     }
-  }
-}
-,
+  },
   "jest": {
     "preset": "jest-expo"
   },
